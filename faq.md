@@ -1,4 +1,4 @@
-# Frequently Askeed Questions
+# Frequently Asked Questions
 
 ### Who wrote Director?
 
