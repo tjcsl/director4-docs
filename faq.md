@@ -1,3 +1,7 @@
+---
+Title: FAQ
+...
+
 # Frequently Asked Questions
 
 ### Who wrote Director?

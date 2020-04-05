@@ -1,3 +1,7 @@
+---
+Title: Troubleshooting
+...
+
 # Troubleshooting
 
 ### Q: I created a `run.sh` file, and my site says it's running, but I get an error when I try to open the page.
