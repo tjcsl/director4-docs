@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import re
 import time
 import urllib.parse
 import xml.etree.ElementTree
@@ -42,6 +43,8 @@ class LinkRewritingTreeProcessor(markdown.treeprocessors.Treeprocessor):
                     if path.endswith(".md"):
                         path = path[:-3]
 
+                    path += "/"
+
                     # Recombine and use the new path
                     new_parts = (parts.scheme, parts.netloc, path, parts.query, parts.fragment)
 
@@ -80,7 +83,6 @@ def load_doc_page(page: str):
     potential_paths = [
         base_path + ".md",
         os.path.join(base_path, "index.md"),
-        os.path.join(base_path, "README.md"),
     ]
 
     for path in potential_paths:
@@ -90,6 +92,11 @@ def load_doc_page(page: str):
 
         # Resolve symbolic links
         path = os.path.realpath(path)
+
+        # Don't render READMEs
+        fname = os.path.basename(path)
+        if fname == "README.md":
+            continue
 
         # And check that the path is still within the directory
         if os.path.commonpath([path, markdown_dir_clean]) != markdown_dir_clean:
@@ -119,11 +126,12 @@ def load_doc_page(page: str):
     return {}, None
 
 
+PAGE_TITLE_REPLACE_RE = re.compile(r"[/-]+")
 def get_page_title(page_name: str, metadata: Dict[str, Any]) -> str:
     if "title" in metadata:
         return " ".join(metadata["title"])
     elif page_name:
-        return page_name.rstrip("/").split("/")[-1].replace("-", " ").title()
+        return PAGE_TITLE_REPLACE_RE.sub(" ", page_name.strip("/-")).title()
     else:
         return "index"
 
@@ -131,8 +139,8 @@ def get_page_title(page_name: str, metadata: Dict[str, Any]) -> str:
 @app.route("/")
 @app.route("/<path:page>")
 def serve(page: str = ""):
-    if page and not page.endswith("/"):
-        return redirect(page + "/", code=302)
+    if "//" in page or page.startswith("/") or (page and not page.endswith("/")):
+        return redirect("/" + re.sub(r"/+", "/", page.strip("/")) + "/")
 
     metadata, text_html = load_doc_page(page)
 
