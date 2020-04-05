@@ -8,7 +8,7 @@ A: After creating or updating your `run.sh`, you must restart your site's proces
 
 A: To prevent abuse, by default Director sites are allocated very limited resources. The default memory limitation for each site is 100 MB. Please try to limit your site's memory usage to stay below this.
 
-If that is not an option and you think you have a valid reason for increased memory allocations, please contact director@tjhsst.edu with an explanation of why.
+If that is not an option and you think you have a valid reason for increased memory allocations, please contact <director@tjhsst.edu> with an explanation of why.
 
 **Before you email: You should NOT be training neural networks or performing computationally intensive tasks on Director sites. The Syslab has two high-performance clusters and two workstations with high-end GPUs specifically for this purpose.**
 
