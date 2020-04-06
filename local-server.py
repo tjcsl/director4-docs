@@ -9,7 +9,7 @@ from typing import Any, Dict, Generator, Optional, Set, Tuple
 import bleach
 import markdown
 import markdown.extensions.toc
-from flask import Flask, redirect
+from flask import Flask, redirect, send_file
 
 
 MARKDOWN_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -86,19 +86,21 @@ class LinkRewritingTreeProcessor(markdown.treeprocessors.Treeprocessor):
                 parts = urllib.parse.urlsplit(href)
 
                 # If it's not an external link, rewrite it
-                if not parts.netloc:
+                if not parts.netloc and parts.path:
                     # Extract the path for rewriting
                     path = parts.path
 
-                    # Strip trailing slashes
-                    path = path.rstrip("/")
+                    ext = os.path.splitext(path)[1]
+                    if not ext or ext == ".md":
+                        # If there's no file extension, or if it's a link to a markdown file
+                        if ext == ".md":
+                            # Remove .md suffixes
+                            path = path[:-3]
 
-                    # Remove .md suffixes
-                    if path.endswith(".md"):
-                        path = path[:-3]
+                        # Ensure we have exactly one trailing slash
+                        path = path.rstrip("/") + "/"
 
-                    # Add a trailing slash
-                    path += "/"
+                    # For other files, do nothing. In particular, no extra trailing slash.
 
                     if not path.startswith("/"):
                         # Make the path absolute by combining with the previous page
@@ -124,27 +126,37 @@ class LinkRewritingExtension(markdown.extensions.Extension):
         md.treeprocessors.register(LinkRewritingTreeProcessor(md, self.page), "link_rewriter", -100)
 
 
-def load_doc_page(page: str):
+def url_to_path(url: str) -> Optional[str]:
     # We do some checks that should prevent ".." attacks later, but
     # it's a good idea to check here too
-    if ".." in page.split("/"):
-        return {}, None
+    if ".." in url.split("/"):
+        return None
 
-    page = page.rstrip("/")
+    url = url.rstrip("/")
 
     markdown_dir_clean = os.path.normpath(MARKDOWN_DIR)
-    base_path = os.path.normpath(os.path.join(markdown_dir_clean, page))
+    base_path = os.path.normpath(os.path.join(markdown_dir_clean, url))
 
     # Sanity check 1: Make sure they aren't trying to address a file outside the
     # directory.
     if os.path.commonpath([base_path, markdown_dir_clean]) != markdown_dir_clean:
-        return {}, None
+        return None
 
     # Sanity check 2: Don't allow loading hidden files.
     # This implicitly blocks ".." as well.
-    for part in page.split("/"):
+    for part in url.split("/"):
         if part.startswith("."):
-            return {}, None
+            return None
+
+    return base_path
+
+
+def load_doc_page(page: str):
+    base_path = url_to_path(page)
+    if base_path is None:
+        return {}, None
+
+    markdown_dir_clean = os.path.normpath(MARKDOWN_DIR)
 
     # Render index.md within directories
     potential_paths = [
@@ -199,6 +211,19 @@ def load_doc_page(page: str):
     return {}, None
 
 
+def find_static_file(url: str) -> Optional[str]:
+    base_path = url_to_path(url)
+    if base_path is None:
+        return None
+
+    markdown_dir_clean = os.path.normpath(MARKDOWN_DIR)
+
+    if os.path.commonpath([base_path, markdown_dir_clean]) != markdown_dir_clean:
+        return None
+
+    return base_path
+
+
 PAGE_TITLE_REPLACE_RE = re.compile(r"[/-]+")
 def get_page_title(page_name: str, metadata: Dict[str, Any]) -> str:
     if "title" in metadata:
@@ -210,15 +235,31 @@ def get_page_title(page_name: str, metadata: Dict[str, Any]) -> str:
 
 
 @app.route("/")
-@app.route("/<path:page>")
-def serve(page: str = ""):
-    if "//" in page or page.startswith("/") or (page and not page.endswith("/")):
-        return redirect("/" + re.sub(r"/+", "/", page.strip("/")) + "/")
+@app.route("/<path:url>")
+def serve(url: str = ""):
+    ext = os.path.splitext(url)[1]
 
-    metadata, text_html = load_doc_page(page)
+    if ext == ".md":
+        return redirect("/" + url[:-3] + "/")
+    elif ext:
+        fpath = find_static_file(url)
+        if fpath is not None and os.path.isfile(fpath):
+            return send_file(fpath)
+
+
+    if "//" in url or url.startswith("/"):
+        return redirect("/" + re.sub(r"/+", "/", url.strip("/")) + "/")
+
+    if not ext and url and not url.endswith("/"):
+        return redirect("/" + url + "/")
+
+    metadata, text_html = load_doc_page(url)
 
     if text_html is None:
         return "Page not found", 404
+
+    if url and not url.endswith("/"):
+        return redirect("/" + url + "/")
 
     return """<!doctype html>
 <html>
@@ -262,7 +303,7 @@ def serve(page: str = ""):
 <body>
 {}
 </body>
-</html>""".format(get_page_title(page, metadata), text_html)
+</html>""".format(get_page_title(url, metadata), text_html)
 
 
 if __name__ == "__main__":
