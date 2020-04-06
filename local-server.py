@@ -6,6 +6,7 @@ import urllib.parse
 import xml.etree.ElementTree
 from typing import Any, Dict, Generator, Optional, Set, Tuple
 
+import bleach
 import markdown
 import markdown.extensions.toc
 from flask import Flask, redirect
@@ -13,6 +14,55 @@ from flask import Flask, redirect
 
 MARKDOWN_DIR = os.path.dirname(os.path.realpath(__file__))
 
+
+# Based off of https://github.com/yourcelf/bleach-whitelist/blob/1b1d5bbced6fa9d5342380c68a57f63720a4d01b/bleach_whitelist/bleach_whitelist.py
+ALLOWED_TAGS = [
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "b",
+    "i",
+    "strong",
+    "em",
+    "tt",
+    "p",
+    "br",
+    "span",
+    "div",
+    "blockquote",
+    "code",
+    "hr",
+    "ul",
+    "ol",
+    "li",
+    "dd",
+    "dt",
+    "img",
+    "a",
+    "sub",
+    "sup",
+    "small",
+    "pre",
+]
+
+ALLOWED_ATTRS = {
+    "*": ["id"],
+    "img": ["src", "alt", "title"],
+    "a": ["href", "title"],
+}
+
+ALLOWED_STYLES = []
+
+cleaner = bleach.sanitizer.Cleaner(
+    tags=ALLOWED_TAGS,
+    attributes=ALLOWED_ATTRS,
+    styles=ALLOWED_STYLES,
+    strip=True,
+    strip_comments=True,
+)
 
 app = Flask(__name__)
 
@@ -116,9 +166,12 @@ def load_doc_page(page: str):
                 markdown.extensions.toc.TocExtension(),
                 LinkRewritingExtension(),
             ],
+            tab_length=4,
+            output_format="html5",
         )
 
-        text_html = markdown_converter.convert(text_md)
+        text_html = cleaner.clean(markdown_converter.convert(text_md))
+
         metadata = markdown_converter.Meta  # pylint: disable=no-member
 
         return metadata, text_html
