@@ -6,7 +6,7 @@ When you're done, take a look at [Site Configuration](site-configuration.md).
 
 ### Personal website
 
-Personal websites are designed for use by a single user.
+Each user can create one personal website, with their TJ username as the site name.
 
 To create a personal site, select "Create webdocs" in the upper right corner of the page. Enter a description for your site and select the site type (see [Selecting your site type](#selecting-your-site-type) below). Then click the "Create site" button at the bottom.
 
