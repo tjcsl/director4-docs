@@ -180,10 +180,6 @@ def load_doc_page(page: str):
         # If it was just /a.md, they should be interpreted relative to /.
         base_page_name = (page + "/" + extra_part).rstrip("/")
 
-        # Check if the path exists first
-        if not os.path.exists(path):
-            continue
-
         # Treat symlinks as redirects
         if os.path.islink(path):
             redirect_url = rewrite_markdown_link(
@@ -192,6 +188,10 @@ def load_doc_page(page: str):
             )
 
             return {"Redirect": redirect_url}, ""
+
+        # Check if the path exists first
+        if not os.path.exists(path):
+            continue
 
         # Resolve symbolic links in other parts of the path
         path = os.path.realpath(path)
