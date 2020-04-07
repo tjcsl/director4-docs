@@ -83,39 +83,7 @@ class LinkRewritingTreeProcessor(markdown.treeprocessors.Treeprocessor):
         if element.tag == "a":
             href = element.get("href")
             if href is not None:
-                parts = urllib.parse.urlsplit(href)
-
-                # If it's not an external link, rewrite it
-                if not parts.netloc and parts.path:
-                    # Extract the path for rewriting
-                    path = parts.path
-
-                    ext = os.path.splitext(path)[1]
-                    if not ext or ext == ".md":
-                        # If there's no file extension, or if it's a link to a markdown file
-                        if ext == ".md":
-                            # Remove .md suffixes
-                            path = path[:-3]
-
-                        # Ensure we have exactly one trailing slash
-                        path = path.rstrip("/") + "/"
-
-                    # For other files, do nothing. In particular, no extra trailing slash.
-
-                    if not path.startswith("/"):
-                        # Make the path absolute by combining with the previous page
-                        if "/" in self.page:
-                            parent_page = self.page.rsplit("/", 1)[0]
-                        else:
-                            parent_page = ""
-
-                        path = os.path.join("/", parent_page, path)
-
-                    # Recombine and use the new path
-                    new_parts = (parts.scheme, parts.netloc, path, parts.query, parts.fragment)
-
-                    # Update the element
-                    element.set("href", urllib.parse.urlunsplit(new_parts))
+                element.set("href", rewrite_markdown_link(link_url=href, base_page_name=self.page))
 
 
 class LinkRewritingExtension(markdown.extensions.Extension):
@@ -124,6 +92,48 @@ class LinkRewritingExtension(markdown.extensions.Extension):
 
     def extendMarkdown(self, md: markdown.Markdown) -> None:
         md.treeprocessors.register(LinkRewritingTreeProcessor(md, self.page), "link_rewriter", -100)
+
+
+def rewrite_markdown_link(*, link_url: str, base_page_name: str) -> str:
+    parts = urllib.parse.urlsplit(link_url)
+
+    base_page_name = base_page_name.strip("/")
+
+    # If it's not an external link, rewrite it
+    if not parts.netloc and parts.path:
+        # Extract the path for rewriting
+        path = parts.path
+
+        ext = os.path.splitext(path)[1]
+        if not ext or ext == ".md":
+            # If there's no file extension, or if it's a link to a markdown file
+
+            if ext == ".md":
+                # Remove .md suffixes
+                path = path[:-3]
+
+            # Ensure we have exactly one trailing slash
+            path = path.rstrip("/") + "/"
+
+        # For other file extensions, do nothing. In particular, no trailing slash.
+
+        if not path.startswith("/"):
+            # Make the path absolute by combining with the previous page
+
+            # Remove the last portion and combine with the rest
+            if "/" in base_page_name:
+                parent_page = base_page_name.rsplit("/", 1)[0]
+            else:
+                parent_page = ""
+
+            path = os.path.normpath(os.path.join("/", parent_page, path))
+
+        # Recombine and use the new path
+        new_parts = (parts.scheme, parts.netloc, path, parts.query, parts.fragment)
+
+        return urllib.parse.urlunsplit(new_parts)
+    else:
+        return link_url
 
 
 def url_to_path(url: str) -> Optional[str]:
@@ -165,11 +175,25 @@ def load_doc_page(page: str):
     ]
 
     for path, extra_part in potential_paths:
+        # We add on the "extra part" because if this was a file like /a/index.md,
+        # then links should be interpreted relative to /a.
+        # If it was just /a.md, they should be interpreted relative to /.
+        base_page_name = (page + "/" + extra_part).rstrip("/")
+
         # Check if the path exists first
         if not os.path.exists(path):
             continue
 
-        # Resolve symbolic links
+        # Treat symlinks as redirects
+        if os.path.islink(path):
+            redirect_url = rewrite_markdown_link(
+                link_url=os.readlink(path),
+                base_page_name=base_page_name,
+            )
+
+            return {"Redirect": redirect_url}, ""
+
+        # Resolve symbolic links in other parts of the path
         path = os.path.realpath(path)
 
         # Don't render READMEs
@@ -193,10 +217,7 @@ def load_doc_page(page: str):
                 "meta",
                 "nl2br",
                 markdown.extensions.toc.TocExtension(),
-                # We add on the "extra part" because if this was a file like /a/index.md,
-                # then links should be interpreted relative to /a.
-                # If it was just /a.md, they should be interpreted relative to /.
-                LinkRewritingExtension((page + "/" + extra_part).rstrip("/")),
+                LinkRewritingExtension(base_page_name),
             ],
             tab_length=4,
             output_format="html5",
@@ -257,6 +278,9 @@ def serve(url: str = ""):
 
     if text_html is None:
         return "Page not found", 404
+
+    if metadata.get("Redirect"):
+        return redirect("/" + metadata.get("Redirect").lstrip("/"))
 
     if url and not url.endswith("/"):
         return redirect("/" + url + "/")
