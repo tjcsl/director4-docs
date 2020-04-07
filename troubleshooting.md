@@ -19,3 +19,15 @@ If that is not an option and you think you have a valid reason for increased mem
 ### Q: My site works, but it runs very slowly.
 
 A: Just like the memory limit, each site's CPU usage is also limited. If you absolutely need your site to be allowed more CPU usage and you think you have a valid reason, please see the contact instructions above.
+
+### Q: My site suddenly can't access its database anymore.
+
+You likely hardcoded your site's database URL into your application. Please see [Don't hardcode your site's database URL](databases/no-hardcode-url.md).
+
+Note: If you regenerated your database password, any terminals you have open will not (and cannot) be automatically updated. Try reloading the page to launch a new terminal.
+
+### Q: My site's server starts, and everything's running, but I get a `502 Bad Gateway` error when I try to open it.
+
+You need to set up your site's server to listen on the port specified by the `PORT` environmental variable, but also to bind to the address specified by the `HOST` environmental variable. This is a change from previous versions of Director.
+
+Some servers will want you to specify these two together in the format `host:port`, and call this the "bind address," "listen address." or something similar. Others will have them as separate options, and refer to the host as "bind address," "listen address," "host," or something similar. It varies.
