@@ -1,3 +1,7 @@
+---
+Title: Site Configuration
+...
+
 # Site Configuration
 
 After creating a site, you should be shown a page with some information about that site, as well as several buttons. Here's what all those buttons do:

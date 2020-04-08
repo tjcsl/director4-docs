@@ -1,3 +1,7 @@
+---
+Title: Databases
+...
+
 # Databases
 
 **IMPORTANT**: [Don't hardcode your site's database URL](no-hardcode-url.md)

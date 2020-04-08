@@ -1,3 +1,7 @@
+---
+Title: Framework Guides
+...
+
 # Framework Guides
 
 - [Static HTML/CSS/JS](static.md)

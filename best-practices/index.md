@@ -1,3 +1,7 @@
+---
+Title: Best Practices
+...
+
 # Best Practices
 
 - [Minimalism](minimalism.md)

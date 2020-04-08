@@ -1,4 +1,8 @@
-# MySQL databases
+---
+Title: PostgreSQL Databases
+...
+
+# PostgreSQL Databases
 
 This page assumes you've read the [Quick Start guide](quick-start.md) and created a MySQL database for your site.
 

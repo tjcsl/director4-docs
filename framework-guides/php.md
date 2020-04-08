@@ -1,3 +1,7 @@
+---
+Title: PHP
+...
+
 # PHP
 
 **WARNING**: Using PHP for Director sites is discouraged. We strongly recommend that you use a more modern framework like [Django](django.md).

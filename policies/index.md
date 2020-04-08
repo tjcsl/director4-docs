@@ -1,3 +1,7 @@
+---
+Title: Policies
+...
+
 # Policies
 
 - [Acceptable Use Policy](aup.md)

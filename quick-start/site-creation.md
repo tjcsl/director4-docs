@@ -1,3 +1,7 @@
+---
+Title: Site Creation
+...
+
 # Site Creation
 
 First, go to [https://director.tjhsst.edu](https://director.tjhsst.edu). Then follow the instructions below, depending on which type of site you want.
