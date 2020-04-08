@@ -1,6 +1,6 @@
 # Framework Guides
 
-- [HTML](html.md)
+- [Static HTML/CSS/JS](static.md)
 - [PHP](php.md)
 - [Node.js](node-js.md)
 - [Django](django.md)
