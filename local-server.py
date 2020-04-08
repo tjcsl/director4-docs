@@ -127,7 +127,10 @@ def rewrite_markdown_link(*, link_url: str, base_page_name: str) -> str:
             else:
                 parent_page = ""
 
+            old_path = path
             path = os.path.normpath(os.path.join("/", parent_page, path))
+            if path != "/" and old_path.endswith("/"):
+                path += "/"
 
         # Recombine and use the new path
         new_parts = (parts.scheme, parts.netloc, path, parts.query, parts.fragment)
@@ -217,7 +220,7 @@ def load_doc_page(page: str):
                 "tables",
                 "meta",
                 "nl2br",
-                markdown.extensions.toc.TocExtension(),
+                markdown.extensions.toc.TocExtension(toc_depth="2-6"),
                 LinkRewritingExtension(base_page_name),
             ],
             tab_length=4,
