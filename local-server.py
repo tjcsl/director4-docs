@@ -249,14 +249,18 @@ def find_static_file(url: str) -> Optional[str]:
     return base_path
 
 
-PAGE_TITLE_REPLACE_RE = re.compile(r"[/-]+")
 def get_page_title(page_name: str, metadata: Dict[str, Any]) -> str:
     if "title" in metadata:
         return " ".join(metadata["title"])
-    elif page_name:
-        return PAGE_TITLE_REPLACE_RE.sub(" ", page_name.strip("/-")).title()
-    else:
-        return "index"
+
+    parts = page_name.strip("/").split("/")
+    if parts[-1] == "index":
+        parts.pop(-1)
+
+    if parts:
+        return parts[-1].strip("-").replace("-", " ").title()
+
+    return "Docs"
 
 
 @app.route("/")
