@@ -119,11 +119,11 @@ engine = create_engine(db_url)
 Using PDO:
 
 ```php
-$db = new PDO("psql:dbname=" . getenv("DIRECTOR_DATABASE_NAME") . ";host=" . getenv("DIRECTOR_DATABASE_HOST") . ";port=" . getenv("DIRECTOR_DATABASE_PORT"), getenv("DIRECTOR_DATABASE_USERNAME"), getenv("DIRECTOR_DATABASE_PASSWORD"));
+$db = new PDO("pgsql:dbname=" . getenv("DIRECTOR_DATABASE_NAME") . ";host=" . getenv("DIRECTOR_DATABASE_HOST") . ";port=" . getenv("DIRECTOR_DATABASE_PORT"), getenv("DIRECTOR_DATABASE_USERNAME"), getenv("DIRECTOR_DATABASE_PASSWORD"));
 ```
 
 Using the `pg_*()` functions:
 
 ```php
-$db = pg_connect(getenv("DIRECTOR_DATABASE_HOST"), getenv("DIRECTOR_DATABASE_USERNAME"), getenv("DIRECTOR_DATABASE_PASSWORD"), getenv("DIRECTOR_DATABASE_NAME"), getenv("DIRECTOR_DATABASE_PORT"));
+$db = pg_connect("host=" . getenv("DIRECTOR_DATABASE_HOST") . " port=" . getenv("DIRECTOR_DATABASE_PORT") . " user=" . getenv("DIRECTOR_DATABASE_USERNAME") . " password=" . getenv("DIRECTOR_DATABASE_PASSWORD") . " dbname=" . getenv("DIRECTOR_DATABASE_NAME"));
 ```
