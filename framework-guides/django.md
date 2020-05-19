@@ -12,6 +12,8 @@ First, select a Python Docker image for your site (see [Custom Docker Images](/q
 
 You can use the `run.sh` template that comes with the Python Docker images, but you will need to comment out the command labeled "Flask," uncomment the command labeled "Django," and replace `<name>` with the name of your application.
 
+### Static files
+
 To serve static files, we recommend using [`whitenoise`](http://whitenoise.evans.io/en/stable/). Setup is simple: just `pip install whitenoise` and then follow WhiteNoise's [Django Quick Start](http://whitenoise.evans.io/en/stable/#quickstart-for-django-apps).
 
 ### Database access
