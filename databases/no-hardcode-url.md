@@ -6,7 +6,7 @@ Title: Don't hardcode your site's database URL
 
 If your site has a database created, and you pull up the page with all your site's information, you will notice that the URL for accessing your site's database is shown right there. You may be tempted to simply copy/paste it into your site's configuration (or, if you need the individual components separately, to copy/paste them one by one). **Do not do this.**
 
-**Your site's database URL can change at any time without warning.** If you click the `Regenerate site secrets` button, the database password is regenerated. If an internal error in Director causes an operation on your site to fail, the Sysadmins will usually perform a standard recovery procedure that regenerates your site's database password. Additionally, if Director undergoes internal changes, other parts of the database URL may change.
+**Your site's database URL can change at any time without warning.** If you click the `Regenerate site secrets` button, the database password is regenerated. Additionally, if Director undergoes internal changes, other parts of the database URL may change.
 
 ### Always use the `DIRECTOR_DATABASE_URL` [^1] environmental variable to connect to a database.
 
