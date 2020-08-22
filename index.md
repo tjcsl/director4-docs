@@ -20,5 +20,6 @@ Welcome to the Director documentation! Here's a list of the pages you can read. 
   How to set up custom domains.
 - [Policies](policies)
   Policies governing use of Director.
+- [What's new in Director 4.0](whatsnew-director4.md)
 - [FAQ](faq.md)
 - [Troubleshooting](troubleshooting.md)
