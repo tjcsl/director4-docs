@@ -1,7 +1,5 @@
 # Custom Domains
 
-##### **Custom domains are currently not supported. The following documentation exists as reference until support is added.**
-
 First, you will need to buy a domain name from a DNS provider, such as [Namecheap](https://namecheap.com) or [Pair Domains](https://pairdomains.com). (Note: These are not endorsements, just examples.)
 
 Next, go to your provider's settings. It should show a list of DNS records. Add a new record. Choose the `CNAME` type and set the value to `user.tjhsst.edu`.
