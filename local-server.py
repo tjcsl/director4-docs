@@ -101,7 +101,7 @@ def rewrite_markdown_link(*, link_url: str, base_page_name: str) -> str:
     base_page_name = base_page_name.strip("/")
 
     # If it's not an external link, rewrite it
-    if not parts.netloc and parts.path:
+    if parts.scheme != "mailto" and not parts.netloc and parts.path:
         # Extract the path for rewriting
         path = parts.path
 
