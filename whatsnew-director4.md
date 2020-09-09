@@ -4,6 +4,10 @@ Title: What's new in Director 4.0
 
 # What's new in Director 4.0
 
+If you were used to Director 3, Director 4.0 attempts to remain relatively compatible and preserve certain workflows. However, it is important to note that Director 4.0 is a complete rework, aiming to take advantage of new technologies and fixing fundamental design flaws from Director 3. Director 4.0 functions quite differently, and users should be aware of this.
+
+This page only summarizes the most important user-visible changes in Director 4.0. If you have any questions or concerns, please feel free to contact us at [director@tjhsst.edu](mailto:director@tjhsst.edu).
+
 ## New features
 
 - Your site now runs inside a Docker container. From the Image Selection page (see [Site Configuration](/quick-start/site-configuration.md) for details), you can select a Docker image, as well as choosing any extra packages you want to install.
