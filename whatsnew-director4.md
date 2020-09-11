@@ -19,4 +19,5 @@ Title: What's new in Director 4.0
 ## Features that are no longer supported
 
 - Git integration has been removed because the new Director 4.0 architecture makes it more difficult to implement and we saw limited usage. Currently, there are no plans to add Git integration.
+  If you require Git, install it from the "Configure Docker Image" page by adding `git` to the list of packages at the bottom of the page.
 - The buttons for exporting/importing databases have been removed. You can still export/import databases, but you'll need to use `mysqldump`/`pg_dump` (exporting) and `mysql`/`psql` (importing) manually from the command line.

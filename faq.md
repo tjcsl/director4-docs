@@ -21,3 +21,11 @@ If you really need to work on your site offline, you may want to put your code i
 `Database Shell` gives you a shell where you can type SQL queries and see the result. However, it does this by connecting directly to the server, rather than running the `mysql` or `psql` commands (which was what previous versions of Director did). As a result, you can only enter normal SQL queries -- commands like `SOURCE` in MySQL and `\dt` in PostgreSQL won't work.
 
 `Alternate shell` runs the appropriate `mysql` or `psql` command to connect to your site's database. In this shell, commands like `SOURCE` in MySQL and `\dt` in PostgreSQL *will* work. However, for complicated technical reasons, this shell type takes much longer to load, so you may want to use `Database Shell` for quick operations.
+
+### What about Git?
+
+A previous version of Director allowed for the use of a webhook to automatically update from a Github repository. We have no plans to reintroduce this into Director as explained [here](../whatsnew-director4).
+
+If you require `git`, you can install it following the instructions [here](../best-practices/version-control).
+
+
