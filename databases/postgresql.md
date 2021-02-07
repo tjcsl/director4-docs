@@ -42,7 +42,7 @@ import os
 
 DATABASES = {
     "default": {
-        "ENGINE": "django_prometheus.db.backends.postgresql",
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": os.environ["DIRECTOR_DATABASE_NAME"],
         "USER": os.environ["DIRECTOR_DATABASE_USERNAME"],
         "PASSWORD": os.environ["DIRECTOR_DATABASE_PASSWORD"],
@@ -60,7 +60,7 @@ import os
 if "DIRECTOR_DATABASE_URL" in os.environ:
     DATABASES = {
         "default": {
-            "ENGINE": "django_prometheus.db.backends.postgresql",
+            "ENGINE": "django.db.backends.postgresql",
             "NAME": os.environ["DIRECTOR_DATABASE_NAME"],
             "USER": os.environ["DIRECTOR_DATABASE_USERNAME"],
             "PASSWORD": os.environ["DIRECTOR_DATABASE_PASSWORD"],
